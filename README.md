@@ -914,193 +914,202 @@ select  * from (listarTelefonosAlumnosActivos);
 
 ## PROCEDIMIENTOS ALMACENADOS
 
-1. Insertar alumno
+1. *Insertar alumno**:
 
-```sql
+```mysql
+sql
+Copy code
 DELIMITER $$
 DROP PROCEDURE IF EXISTS InsertarAlumno $$
 CREATE PROCEDURE InsertarAlumno (
     IN p_nombre VARCHAR(25),
     IN p_apellido1 VARCHAR(50),
     IN p_apellido2 VARCHAR(50),
-    IN p_id_ciudad INT,
+    IN p_nombre_ciudad VARCHAR(50),
     IN p_fecha_nacimiento DATE,
-    IN p_id_sexo INT
+    IN p_nombre_sexo VARCHAR(50)
 )
 BEGIN
+    DECLARE v_id_ciudad INT;
+    DECLARE v_id_sexo INT;
+    
+    -- Obtener el ID de la ciudad
+    SELECT id INTO v_id_ciudad FROM ciudad WHERE nombre = p_nombre_ciudad;
+    
+    -- Obtener el ID del sexo
+    SELECT id INTO v_id_sexo FROM tipo_sexo WHERE nombre = p_nombre_sexo;
+    
+    -- Insertar el alumno
     INSERT INTO alumno (nombre, apellido1, apellido2, id_ciudad, fecha_nacimiento, id_sexo) 
-    VALUES (p_nombre, p_apellido1, p_apellido2, p_id_ciudad, p_fecha_nacimiento, p_id_sexo);
+    VALUES (p_nombre, p_apellido1, p_apellido2, v_id_ciudad, p_fecha_nacimiento, v_id_sexo);
 END $$
 DELIMITER ;
-CALL InsertarAlumno('Juan', 'Perez', 'Gomez', 1, '2000-01-15', 1);
-
 ```
 
-2. Actualizar info de profesor
+2. **Actualizar info de profesor **:
 
-   ```sql
-   DELIMITER $$
-   CREATE PROCEDURE ActualizarProfesor (
-       IN p_id INT,
-       IN p_nombre VARCHAR(25),
-       IN p_apellido1 VARCHAR(50),
-       IN p_apellido2 VARCHAR(50),
-       IN p_id_ciudad INT,
-       IN p_fecha_nacimiento DATE,
-       IN p_id_sexo INT
-   )
-   BEGIN
-       UPDATE profesor 
-       SET 
-           nombre = p_nombre,
-           apellido1 = p_apellido1,
-           apellido2 = p_apellido2,
-           id_ciudad = p_id_ciudad,
-           fecha_nacimiento = p_fecha_nacimiento,
-           id_sexo = p_id_sexo
-       WHERE id = p_id;
-   END $$
-   DELIMITER ;
-   CALL ActualizarProfesor(1, 'Maria', 'Gonzalez', 'Lopez', 2, '1985-07-20', 2);
-   
-   ```
+```mysql
+sql
+Copy code
+DELIMITER $$
+CREATE PROCEDURE ActualizarProfesor (
+    IN p_id INT,
+    IN p_nombre VARCHAR(25),
+    IN p_apellido1 VARCHAR(50),
+    IN p_apellido2 VARCHAR(50),
+    IN p_nombre_ciudad VARCHAR(50),
+    IN p_fecha_nacimiento DATE,
+    IN p_nombre_sexo VARCHAR(50)
+)
+BEGIN
+    DECLARE v_id_ciudad INT;
+    DECLARE v_id_sexo INT;
+    
+    -- Obtener el ID de la ciudad
+    SELECT id INTO v_id_ciudad FROM ciudad WHERE nombre = p_nombre_ciudad;
+    
+    -- Obtener el ID del sexo
+    SELECT id INTO v_id_sexo FROM tipo_sexo WHERE nombre = p_nombre_sexo;
+    
+    -- Actualizar el profesor
+    UPDATE profesor 
+    SET 
+        nombre = p_nombre,
+        apellido1 = p_apellido1,
+        apellido2 = p_apellido2,
+        id_ciudad = v_id_ciudad,
+        fecha_nacimiento = p_fecha_nacimiento,
+        id_sexo = v_id_sexo
+    WHERE id = p_id;
+END $$
+DELIMITER ;
+```
 
-   3. Eliminar asignatura
+3. **Eliminar asignatura**:
 
-      ```sql
-      DELIMITER $$
-      CREATE PROCEDURE EliminarAsignatura (
-          IN p_id INT
-      )
-      BEGIN
-          DELETE FROM asignatura 
-          WHERE id = p_id;
-      END $$
-      DELIMITER ;
-      CALL EliminarAsignatura(3);
-      
-      ```
+```mysql
+sql
+Copy code
+DELIMITER $$
+CREATE PROCEDURE EliminarAsignatura (
+    IN p_id INT
+)
+BEGIN
+    DELETE FROM asignatura 
+    WHERE id = p_id;
+END $$
+DELIMITER ;
+```
 
-      4.  insertar ciudad
+4.**Insertar ciudad**:
 
-         ```sql
-         DELIMITER $$
-         CREATE PROCEDURE InsertarCiudad (
-             IN p_nombre VARCHAR(50)
-         )
-         BEGIN
-             INSERT INTO ciudad (nombre) VALUES (p_nombre);
-         END $$
-         DELIMITER ;
-         
-         CALL InsertarCiudad('Sevilla');
-         
-         ```
+```mysql
+sql
+Copy code
+DELIMITER $$
+CREATE PROCEDURE InsertarCiudad (
+    IN p_nombre VARCHAR(50)
+)
+BEGIN
+    INSERT INTO ciudad (nombre) VALUES (p_nombre);
+END $$
+DELIMITER ;
+```
 
-         5. actualizar grado
+5. **Actualizar grado **:
 
-            ```sql
-            DELIMITER $$
-            CREATE PROCEDURE ActualizarGrado (
-                IN p_id INT,
-                IN p_nombre VARCHAR(100)
-            )
-            BEGIN
-                UPDATE grado
-                SET nombre = p_nombre
-                WHERE id = p_id;
-            END $$
-            DELIMITER ;
-            
-            CALL ActualizarGrado(2, 'Licenciatura en Biología');
-            
-            ```
+```mysql
+sql
+Copy code
+DELIMITER $$
+CREATE PROCEDURE ActualizarGrado (
+    IN p_id INT,
+    IN p_nombre VARCHAR(100)
+)
+BEGIN
+    UPDATE grado
+    SET nombre = p_nombre
+    WHERE id = p_id;
+END $$
+DELIMITER ;
+```
 
-            6. Insertar tipo de asignatura
+6. **Insertar tipo de asignatura **:
 
-               ```sql
-               DELIMITER $$
-               CREATE PROCEDURE InsertarTipoAsignatura (
-                   IN p_nombre VARCHAR(50)
-               )
-               BEGIN
-                   INSERT INTO tipo_asignatura (nombre) VALUES (p_nombre);
-               END $$
-               DELIMITER ;
-               
-               CALL InsertarTipoAsignatura('Electiva');
-               
-               ```
+```mysql
+sql
+Copy code
+DELIMITER $$
+CREATE PROCEDURE InsertarTipoAsignatura (
+    IN p_nombre VARCHAR(50)
+)
+BEGIN
+    INSERT INTO tipo_asignatura (nombre) VALUES (p_nombre);
+END $$
+DELIMITER ;
+```
 
-               
+7. **Eliminar teléfono de alumnos **:
 
-7. Eliminar telefono de alumnos
+```mysql
+sql
+Copy code
+DELIMITER $$
+CREATE PROCEDURE EliminarTelefonoAlumno (
+    IN p_id INT
+)
+BEGIN
+    DELETE FROM telefono_alumno WHERE id = p_id;
+END $$
+DELIMITER ;
+```
 
-   ```sql
-   DELIMITER $$
-   CREATE PROCEDURE EliminarTelefonoAlumno (
-       IN p_id INT
-   )
-   BEGIN
-       DELETE FROM telefono_alumno WHERE id = p_id;
-   END $$
-   DELIMITER ;
-   
-   CALL EliminarTelefonoAlumno(5);
-   
-   ```
+8. **Insertar nuevo curso escolar **:
 
-   8. Insertar nuevo curso escolar
+```mysql
+sql
+Copy code
+DELIMITER $$
+CREATE PROCEDURE InsertarCursoEscolar (
+    IN p_año_inicio DATE,
+    IN p_año_fin DATE
+)
+BEGIN
+    INSERT INTO curso_escolar (año_inicio, año_fin) VALUES (p_año_inicio, p_año_fin);
+END $$
+DELIMITER ;
+```
 
-      ```sql
-      DELIMITER $$
-      CREATE PROCEDURE InsertarCursoEscolar (
-          IN p_año_inicio DATE,
-          IN p_año_fin DATE
-      )
-      BEGIN
-          INSERT INTO curso_escolar (año_inicio, año_fin) VALUES (p_año_inicio, p_año_fin);
-      END $$
-      DELIMITER ;
-      
-      CALL InsertarCursoEscolar('2024-09-01', '2025-06-30');
-      
-      ```
+9. **Actualizar dirección del profesor **:
 
-      9. Actualizar direccion del profesot
+```mysql
+sql
+Copy code
+DELIMITER $$
+CREATE PROCEDURE ActualizarDireccionProfesor (
+    IN p_id INT,
+    IN p_direccion VARCHAR(50)
+)
+BEGIN
+    UPDATE direccion_profesor
+    SET direccion = p_direccion
+    WHERE id = p_id;
+END $$
+DELIMITER ;
+```
 
-         ```sql
-         DELIMITER $$
-         CREATE PROCEDURE ActualizarDireccionProfesor (
-             IN p_id INT,
-             IN p_direccion VARCHAR(50)
-         )
-         BEGIN
-             UPDATE direccion_profesor
-             SET direccion = p_direccion
-             WHERE id = p_id;
-         END $$
-         DELIMITER ;
-         
-         CALL ActualizarDireccionProfesor(2, 'Av. Principal 123');
-         
-         ```
+10. **Insertar sexo**:
 
-         10. Insertar sexo
-
-             ```sql
-             DELIMITER $$
-             CREATE PROCEDURE InsertarSexo (
-                 IN p_nombre VARCHAR(50)
-             )
-             BEGIN
-                 INSERT INTO tipo_sexo (nombre) VALUES (p_nombre);
-             END $$
-             DELIMITER ;
-             
-             CALL InsertarSexo('Nuevo sexo');
-             
-             ```
-
-             
+```mysql
+sql
+Copy code
+DELIMITER $$
+CREATE PROCEDURE InsertarSexo (
+    IN p_nombre VARCHAR(50)
+)
+BEGIN
+    INSERT INTO tipo_sexo (nombre) VALUES (p_nombre);
+END $$
+DELIMITER ;
+```
 
